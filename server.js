@@ -104,7 +104,7 @@ let booksHandler = ((req, res) => {
 
 let addBookHandler = (async (req, res) => {
 
-  console.log(req.body);
+  // console.log(req.body);
 
   let title = req.body.params.title;
   let description = req.body.params.description;
@@ -127,7 +127,7 @@ let addBookHandler = (async (req, res) => {
 
 let deleteBookHandler = (async (req, res) => {
 
-  console.log('where', req.params.id);
+  // console.log('where', req.params.id);
 
   let userBooksQuery = req.query.userBooks;
 
@@ -154,6 +154,38 @@ let deleteBookHandler = (async (req, res) => {
 });
 
 
+let updateBookHandler = ((req, res) => {
+
+  console.log('update', req.body, );
+
+  let title = req.body.params.title;
+  let description = req.body.params.description;
+  let status = req.body.params.status;
+  let email = req.body.params.email;
+  let bookID = req.params.id;
+
+  bookModel.findOne({ _id: bookID }, async (error, booksData) => {
+
+    booksData.title = title;
+    booksData.description = description;
+    booksData.status = status;
+    booksData.email = email;
+
+    await booksData.save();
+
+    bookModel.find({ email: email }, (error, booksData) => {
+      if (error) {
+        console.log('error in adding books data')
+        res.send(error);
+      } else {
+        res.send(booksData);
+      }
+    });
+  });
+});
+
+
+
 // Routes
 // ------------------------------
 
@@ -161,7 +193,7 @@ server.get('/test', testHandler);
 server.get('/books', booksHandler);
 server.post('/books', addBookHandler);
 server.delete('/books/:id', deleteBookHandler);
-
+server.put('/books/:id', updateBookHandler);
 
 server.listen(PORT, () => {
   console.log('up and listening on port ', PORT);
